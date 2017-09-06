@@ -2,6 +2,7 @@ import java.util.Scanner;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 class VCFRecord {
 	String theRecord;
@@ -12,10 +13,16 @@ class VCFRecord {
 
 class ReadVCF {
     public static void main(String[] args) {
-    	if (args.length != 1) {
-    		System.err.println("Example usage: java ReadVCF <filename>");
+    	if (args.length != 2) {
+    		System.err.println("Example usage: java ReadVCF <filename> <exons>");
             return;
     	}
+    	
+    	//VCFData/wgEncodeGencodeBasicV17.txt"
+    	
+    	ArrayList<ExonRegion> exonRegions = ExonParser.getExonRegions(args[1]);
+    	
+    	
         try {
 		    Scanner theScanner = new Scanner(new File(args[0]));
 		    String theLine = theScanner.nextLine();
@@ -43,8 +50,8 @@ class ReadVCF {
 		        //System.out.println(chromosome + " , " + position);
 		        
 		        for (ExonRegion theExonRegion : exonRegions) {
-		        	if (theExonRegion.chromosome.equals(chromosome) {
-				    	for (Range theRange : theExonRegion) {
+		        	if (theExonRegion.chromosome.equals(chromosome)) {
+				    	for (Range theRange : theExonRegion.ranges) {
 				    		//TODO: Early stop?
 				    		if (position > theRange.start && position < theRange.end) {
 				    			System.out.println(theLine);

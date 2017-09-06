@@ -3,9 +3,21 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class ExonParser {
-    public static void main(String[] args) {
+	public static void main(String[] args) {
+		ArrayList<ExonRegion> exons = getExonRegions(args[0]);
+		
+        for(ExonRegion e : exons){
+            System.out.print(e.chromosome + " " + e.direction + " ");
+            for (Range r : e.ranges){
+                System.out.print(r.start+"-"+r.end+", ");
+            }
+            System.out.println("\n");
+        }
+	}
+
+    public static ArrayList<ExonRegion> getExonRegions(String filename) {
         try{
-            Scanner sc = new Scanner(new File("VCFData/wgEncodeGencodeBasicV17.txt"));
+            Scanner sc = new Scanner(new File(filename));
             String previousChrom = "";
             ArrayList<ExonRegion> exons = new ArrayList<ExonRegion>();
             ExonRegion a = null;
@@ -29,17 +41,13 @@ public class ExonParser {
                 }
                 a = null;
             }
-            for(ExonRegion e : exons){
-                System.out.print(e.chromosome + " " + e.direction + " ");
-                for (Range r : e.ranges){
-                    System.out.print(r.start+"-"+r.end+", ");
-                }
-                System.out.println("\n");
-            }
+            return exons;
         }
         catch (Exception e){
             e.printStackTrace();
         }
+        //TODO: Something better?
+        return null;
     }
 }
 
