@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-public class ReadInfo
+public class ReadInfo {
   public static void main(String[] args) {
 
     ArrayList<Record> recs = new ArrayList<Record>();
@@ -14,8 +14,17 @@ public class ReadInfo
       String[] splits = line.split("\\s+");
       if(process) {
         String[] acan = splits[7].split(";");
-        int ac = Integer.parseInt(acan[0].split("=")[1]);
-        int an = Integer.parseInt(acan[1].split("=")[1]);
+        int ac = 0;
+        int an = 0;
+        for(int i = 0; i < 2; i++) {
+          if(acan[0].contains("AC")) {
+            ac = Integer.parseInt(acan[0].split("=")[1]);
+            an = Integer.parseInt(acan[1].split("=")[1]);
+          } else {
+            ac = Integer.parseInt(acan[1].split("=")[1]);
+            an = Integer.parseInt(acan[0].split("=")[1]);
+          }
+        }
         recs.add(new Record(Integer.parseInt(splits[0]), Integer.parseInt(splits[1]),
           splits[2], splits[3], splits[4], splits[5], splits[6], ac, an));
       }
@@ -29,7 +38,7 @@ public class ReadInfo
 }
 
 
-class Record{
+class Record {
   int chromosone;
   int pos;
   String id;
