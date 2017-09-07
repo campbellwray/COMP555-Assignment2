@@ -51,17 +51,24 @@ class ReadVCF {
 		        
 		        String[] familyMembers = new String[(son2Index-fatIndex)+1];
 		        //System.out.println(son2Index-fatIndex);
-		        
+		        //System.out.println(theLine);
 		        for (int i=fatIndex; i<=son2Index; i++) {
 		        	familyMembers[i-fatIndex] = splitLines[i];
 		        }
 		        
 		        //System.out.println(chromosome + " , " + position);
+		        /*for (String familyMember : familyMembers) {
+		        	String genotype = familyMember.split(":")[0];
+		        	//System.out.print(genotype + "\t");
+		        	
+		        }*/
+		       
+		       checkSickle(familyMembers, theLine);
+		       checkRetin(familyMembers, theLine);
+		       checkSkele(familyMembers, theLine);
+		       checkParap(familyMembers, theLine);
 		        
-		        for (String familyMember : familyMembers) {
-		        	System.out.print(familyMember.split(":")[0] + "\t");
-		        }
-		        System.out.println();
+		        
 		        
 		        
 		        
@@ -95,5 +102,98 @@ class ReadVCF {
     	}
     	return -1;
     }
-
+    
+    static boolean genotypeHetero(String genotype){
+		if (genotype.equals("0/1") || 
+			genotype.equals("1/0") || 
+			genotype.equals("1|0") || 
+			genotype.equals("0|1")){
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    static boolean genotypeHomoRec(String genotype){
+		if (genotype.equals("1/1")||genotype.equals("1|1")){
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    static boolean genotypeHomoDom(String genotype){
+		if (genotype.equals("0/0")||genotype.equals("0|0")){
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+    
+    static void checkSickle (String [] familyMembers, String theLine){
+    if (genotypeHetero(familyMembers[0].split(":")[0]) && //fATHER
+    	genotypeHetero(familyMembers[1].split(":")[0]) &&	//Mother
+    	genotypeHetero(familyMembers[2].split(":")[0]) &&	//D1
+    	genotypeHomoDom(familyMembers[3].split(":")[0]) && //D2
+    	genotypeHomoRec(familyMembers[4].split(":")[0]) && //D3
+    	genotypeHetero(familyMembers[5].split(":")[0]) && //S1
+    	genotypeHomoDom(familyMembers[6].split(":")[0]) //S2
+    	){
+			for (String familyMember : familyMembers) {
+				String genotype = familyMember.split(":")[0];
+				System.out.print(genotype + "\t");
+			}
+			System.out.println("(Sickle)--->\t" + theLine);
+		}
+    }
+    static void checkRetin (String [] familyMembers, String theLine){
+    if (genotypeHomoRec(familyMembers[0].split(":")[0]) && //fATHER
+    	genotypeHetero(familyMembers[1].split(":")[0]) &&	//Mother
+    	genotypeHetero(familyMembers[2].split(":")[0]) &&	//D1
+    	genotypeHomoRec(familyMembers[3].split(":")[0]) && //D2
+    	genotypeHetero(familyMembers[4].split(":")[0]) && //D3
+    	genotypeHetero(familyMembers[5].split(":")[0]) && //S1
+    	genotypeHomoRec(familyMembers[6].split(":")[0]) //S2
+    	){
+			for (String familyMember : familyMembers) {
+				String genotype = familyMember.split(":")[0];
+				System.out.print(genotype + "\t");
+			}
+			System.out.println("(Retin)--->\t" + theLine);
+		}
+    }
+    
+    static void checkSkele (String [] familyMembers, String theLine){
+    if (genotypeHetero(familyMembers[0].split(":")[0]) && //fATHER
+    	genotypeHetero(familyMembers[1].split(":")[0]) &&	//Mother
+    	(genotypeHetero(familyMembers[2].split(":")[0]) || genotypeHomoDom(familyMembers[2].split(":")[0])) &&	//D1
+    	genotypeHomoRec(familyMembers[3].split(":")[0]) && //D2
+    	(genotypeHetero(familyMembers[4].split(":")[0]) || genotypeHomoDom(familyMembers[4].split(":")[0])) && //D3
+    	genotypeHomoRec(familyMembers[5].split(":")[0]) && //S1
+    	(genotypeHetero(familyMembers[6].split(":")[0]) || genotypeHomoDom(familyMembers[6].split(":")[0])) //S2
+    	){
+			for (String familyMember : familyMembers) {
+				String genotype = familyMember.split(":")[0];
+				System.out.print(genotype + "\t");
+			}
+			System.out.println("(Skele)--->\t" + theLine);
+		}
+    }
+	static void checkParap (String [] familyMembers, String theLine){
+    if (genotypeHomoRec(familyMembers[0].split(":")[0]) && //fATHER
+    	genotypeHetero(familyMembers[1].split(":")[0]) &&	//Mother
+    	genotypeHomoRec(familyMembers[2].split(":")[0]) &&	//D1
+    	genotypeHetero(familyMembers[3].split(":")[0]) && //D2
+    	genotypeHomoRec(familyMembers[4].split(":")[0]) && //D3
+    	genotypeHetero(familyMembers[5].split(":")[0]) && //S1
+    	genotypeHomoRec(familyMembers[6].split(":")[0]) //S2
+    	){
+			for (String familyMember : familyMembers) {
+				String genotype = familyMember.split(":")[0];
+				System.out.print(genotype + "\t");
+			}
+			System.out.println("(Parap)--->\t" + theLine);
+		}
+    }
 }
