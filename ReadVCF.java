@@ -20,7 +20,7 @@ class ReadVCF {
     	
     	//VCFData/wgEncodeGencodeBasicV17.txt"
     	
-    	//ArrayList<ExonRegion> exonRegions = ExonParser.getExonRegions(args[1]);
+    	ArrayList<ExonRegion> exonRegions = ExonParser.getExonRegions(args[1]);
     	
     	
         try {
@@ -46,8 +46,8 @@ class ReadVCF {
 		        theLine = theScanner.nextLine();
 		        splitLines = theLine.split("\\s+");
 		        
-		        //String chromosome = "chr"+splitLines[chromIndex];
-		        //int position = Integer.parseInt(splitLines[posIndex]);
+		        String chromosome = "chr"+splitLines[chromIndex];
+		        int position = Integer.parseInt(splitLines[posIndex]);
 		        
 		        String[] familyMembers = new String[(son2Index-fatIndex)+1];
 		        //System.out.println(son2Index-fatIndex);
@@ -63,28 +63,28 @@ class ReadVCF {
 		        	
 		        }*/
 		       
-		       checkSickle(familyMembers, theLine);
-		       checkRetin(familyMembers, theLine);
-		       checkSkele(familyMembers, theLine);
-		       checkParap(familyMembers, theLine);
+				for (ExonRegion theExonRegion : exonRegions) {
+					if (theExonRegion.chromosome.equals(chromosome)) {
+						for (Range theRange : theExonRegion.ranges) {
+							//TODO: Early stop?
+							if (position > theRange.start && position < theRange.end) {
+								checkSickle(familyMembers, theLine);
+								checkRetin(familyMembers, theLine);
+								checkSkele(familyMembers, theLine);
+								checkParap(familyMembers, theLine);
+								break;
+							}
+						}
+					}
+				}
+				
 		        
 		        
 		        
 		        
 		        
 		        
-		        /*
-		        for (ExonRegion theExonRegion : exonRegions) {
-		        	if (theExonRegion.chromosome.equals(chromosome)) {
-				    	for (Range theRange : theExonRegion.ranges) {
-				    		//TODO: Early stop?
-				    		if (position > theRange.start && position < theRange.end) {
-				    			System.out.println(theLine);
-				    			break;
-			    			}
-				    	}
-		        	}
-		        }*/
+		        
 		        
 		    }
         }
