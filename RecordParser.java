@@ -2,122 +2,95 @@ import java.io.*;
 import java.util.*;
 
 public class RecordParser {
-  public static void main(String[] args) throws Exception {
-	
-    //ArrayList<Record> recs = new ArrayList<Record>();
-	//args[0] is ALL.merged
-	//args[1] is filtered
-    //boolean process = false;
-    //Scanner recordScanner = new Scanner(new File("/home/tcs/public_html/COMP555/VCFdata/ALL.merged.phase1_release_v3.20101123.snps_indels_svs.vcf"));
-		Scanner recordScanner = new Scanner(new File("../filteredResults2.txt"));
-		Scanner resultScanner = new Scanner(new File("../filteredResults.txt"));
-	
-	//ArrayList<Integer[]> present = new ArrayList<Integer[]>();
-	
-	/*while(sc2.hasNextLine()) {
-		String line2 = sc2.nextLine();
-		if(line2.contains("#")) {
-      	continue;
-      }
-		String[] splits2 = line2.split("\\s+");
-		
-		Integer[] temp = new Integer[2];
-		temp[0] = Integer.parseInt(splits2[1]);
-		temp[1] = Integer.parseInt(splits2[2]);
-		
-		present.add(temp);
-	}	*/
-		String line = recordScanner.nextLine();
-		
-		while(line.contains("#")) {
-      	line = recordScanner.nextLine();
-     }
-	
+    public static void main(String[] args) throws Exception {
+        //ArrayList<Record> recs = new ArrayList<Record>();
+        //args[0] is ALL.merged
+        //args[1] is filtered
+        //boolean process = false;
+        //Scanner recordScanner = getVCFScanner("/home/tcs/public_html/COMP555/VCFdata/ALL.merged.phase1_release_v3.20101123.snps_indels_svs.vcf");
+        VCFScanner knownVariantsVCFScanner = new VCFScanner("../filteredResults2.txt", false);
+        VCFScanner queryVariantVCFScanner = new VCFScanner("../filteredResults.txt", false);
+        //Scanner recordScanner = getVCFScanner("../filteredResults2.txt");
+        //Scanner resultScanner = getVCFScanner("../filteredResults.txt");
 
-		int lineC = 0;
-		boolean seen2 = false;
-		boolean seen3 = false;
-		
-		
-		String result = resultScanner.nextLine();
-		result = resultScanner.nextLine();
-		
-		String[] splits2 = result.split("\\s+");
-		
-		int resultChr = Integer.parseInt(splits2[1]);
-		int resultPos = Integer.parseInt(splits2[2]);
-    while(recordScanner.hasNextLine()) {
-    	
- 
-    	
-		  	String[] splits = line.split("\\s+");
-		    
-		    int chr = Integer.parseInt(splits[0]);
-				int pos = Integer.parseInt(splits[1]);
-				
-				
-				if((chr == 2 && !seen2 )){
-					seen2 = true;
-					resultScanner = new Scanner(new File("../filteredResults.txt"));
-					result = resultScanner.nextLine();
-					result = resultScanner.nextLine();
-					splits2 = result.split("\\s+");
-						
-						resultChr = Integer.parseInt(splits2[1]);
-						resultPos = Integer.parseInt(splits2[2]);
-				}
-				else if (chr == 3 && !seen3){
-					seen3 = true;
-					resultScanner = new Scanner(new File("../filteredResults.txt"));
-					result = resultScanner.nextLine();
-					result = resultScanner.nextLine();
-					splits2 = result.split("\\s+");
-						
-						resultChr = Integer.parseInt(splits2[1]);
-						resultPos = Integer.parseInt(splits2[2]);
-				}
-		  	
-		  	
-		  	
-		  	
-		  	while (resultChr < chr || (resultChr <= chr && resultPos < pos)){
-					if (resultScanner.hasNextLine()){
-						result = resultScanner.nextLine();
-						splits2 = result.split("\\s+");
-						
-						resultChr = Integer.parseInt(splits2[1]);
-						resultPos = Integer.parseInt(splits2[2]);
-						System.out.println("ALL.mereged.Record: chr=" + chr + " pos=" + pos + " <=====>" + " filteredResults.tx: chr=" + resultChr + " pos=" + resultPos);
-			  		
-					}
-					else{
-						return;
-					}
-				}
-				System.out.println(lineC+ " ALL.mereged.Record: chr=" + chr + " pos=" + pos + " <=====>" + " filteredResults.tx: chr=" + resultChr + " pos=" + resultPos);
-	    	
-    		if (resultChr == chr && resultPos == pos){
-			  	System.out.println(line);
-			  }
-    	
-  			if((lineC++ % 100000) == 1){
-	    		System.out.println(lineC+ " ALL.mereged.Record: chr=" + chr + " pos=" + pos + " <=====>" + " filteredResults.tx: chr=" + resultChr + " pos=" + resultPos);
-	    	}
-	    	
-	    	
-	    	line = recordScanner.nextLine();
-	    	
-  	  }
-       
-	    	   
-	  /*for(Integer[] in : present) {
-	  	if(in[0].equals(c1) && in[1].equals(pos1)) {
-	  		System.out.println(line);
-	  	}
-	  }
-	  
-      
-      }
+        /*
+        ArrayList<Integer[]> present = new ArrayList<Integer[]>();
+        while (sc2.hasNextLine()) {
+            String line2 = sc2.nextLine();
+            if (line2.contains("#")) {
+                continue;
+            }
+            String[] splits2 = line2.split("\\s+");
+
+            Integer[] temp = new Integer[2];
+            temp[0] = Integer.parseInt(splits2[1]);
+            temp[1] = Integer.parseInt(splits2[2]);
+
+            present.add(temp);
+        }*/
+
+        /*
+        String line = recordScanner.nextLine();
+        //Skip long header
+        while (line.contains("#")) {
+            line = recordScanner.nextLine();
+        }*/
+
+        String knownVariantLine;
+
+        int lineC = 0;
+        boolean seen2 = false;
+        boolean seen3 = false;
+
+        int[] resultChrPos = new int[2];
+        resultChrPos = getNextChrPos(queryVariantVCFScanner.scanner, resultChrPos);
+
+        while (knownVariantsVCFScanner.scanner.hasNextLine()) {
+            knownVariantLine = knownVariantsVCFScanner.scanner.nextLine();
+
+            String[] splits = knownVariantLine.split("\\s+");
+
+            int chr = Integer.parseInt(splits[0]);
+            int pos = Integer.parseInt(splits[1]);
+
+            //Known variants are not numerically ordered: Reset queryVariant scanner after 20->2, 30->3 transitions
+            if ((chr == 2 && !seen2)) {
+                seen2 = true;
+                queryVariantVCFScanner = new VCFScanner("../filteredResults.txt", false);
+                resultChrPos = getNextChrPos(queryVariantVCFScanner.scanner, resultChrPos);
+            } else if (chr == 3 && !seen3) {
+                seen3 = true;
+                queryVariantVCFScanner = new VCFScanner("../filteredResults.txt", false);
+                resultChrPos = getNextChrPos(queryVariantVCFScanner.scanner, resultChrPos);
+            }
+
+            while (resultChrPos[0] < chr || (resultChrPos[0] <= chr && resultChrPos[1] < pos)) {
+                if (queryVariantVCFScanner.scanner.hasNextLine()) {
+                    resultChrPos = getNextChrPos(queryVariantVCFScanner.scanner, resultChrPos);
+                    System.out.println("ALL.merged.Record: chr=" + chr + " pos=" + pos + " <=====>" + " filteredResults.txt: chr=" + resultChrPos[0] + " pos=" + resultChrPos[1]);
+                } else {
+                    return;
+                }
+            }
+
+            System.out.println(lineC + " ALL.merged.Record: chr=" + chr + " pos=" + pos + " <=====>" + " filteredResults.txt: chr=" + resultChrPos[0] + " pos=" + resultChrPos[1]);
+
+            if (resultChrPos[0] == chr && resultChrPos[1] == pos) {
+                System.out.println("\n" + knownVariantLine + "\n");
+            }
+
+            if ((lineC++ % 100000) == 1) {
+                System.out.println(lineC + " ALL.merged.Record: chr=" + chr + " pos=" + pos + " <=====>" + " filteredResults.txt: chr=" + resultChrPos[0] + " pos=" + resultChrPos[1]);
+            }
+        }
+
+        /*
+        for(Integer[] in : present) {
+            if (in[0].equals(c1) && in[1].equals(pos1)) {
+                System.out.println(line);
+            }
+        }*/
+    }
       
       
       /*if(process) {
@@ -142,5 +115,11 @@ public class RecordParser {
     }
     for(int i = 0; i < recs.size(); i++)
       System.out.println(recs.get(i).prettyString());*/
-  }
+
+    private static int[] getNextChrPos(Scanner resultScanner, int[] resultChrPos) {
+        String[] splits2 = resultScanner.nextLine().split("\\s+");
+        resultChrPos[0] = Integer.parseInt(splits2[1]);
+        resultChrPos[1] = Integer.parseInt(splits2[2]);
+        return resultChrPos;
+    }
 }
