@@ -38,28 +38,35 @@ public class RecordParser {
 
         String knownVariantLine;
 
-        int lineC = 0;
+        int lineCount = 0;
         boolean seen2 = false;
         boolean seen3 = false;
 
+        //Chromosome and position
         int[] resultChrPos = new int[2];
         resultChrPos = getNextChrPos(queryVariantVCFScanner.scanner, resultChrPos);
+
+        int chrIndex = knownVariantsVCFScanner.getHeaderIndex("CHROM");
+        int posIndex = knownVariantsVCFScanner.getHeaderIndex("POS");
 
         while (knownVariantsVCFScanner.scanner.hasNextLine()) {
             knownVariantLine = knownVariantsVCFScanner.scanner.nextLine();
 
             String[] splits = knownVariantLine.split("\\s+");
 
-            int chr = Integer.parseInt(splits[0]);
-            int pos = Integer.parseInt(splits[1]);
+            //TODO: X chromosome?
+            int chr = Integer.parseInt(splits[chrIndex]);
+            int pos = Integer.parseInt(splits[posIndex]);
 
-            //Known variants are not numerically ordered: Reset queryVariant scanner after 20->2, 30->3 transitions
+            //Known variants file is not numerically ordered: Reset queryVariant scanner after 19->2, 22->3 transitions
             if ((chr == 2 && !seen2)) {
                 seen2 = true;
+                System.out.println("\nRESETTING FROM 2\n");
                 queryVariantVCFScanner = new VCFScanner("../filteredResults.txt", false);
                 resultChrPos = getNextChrPos(queryVariantVCFScanner.scanner, resultChrPos);
             } else if (chr == 3 && !seen3) {
                 seen3 = true;
+                System.out.println("\nRESETTING FROM 3\n");
                 queryVariantVCFScanner = new VCFScanner("../filteredResults.txt", false);
                 resultChrPos = getNextChrPos(queryVariantVCFScanner.scanner, resultChrPos);
             }
@@ -73,14 +80,14 @@ public class RecordParser {
                 }
             }
 
-            System.out.println(lineC + " ALL.merged.Record: chr=" + chr + " pos=" + pos + " <=====>" + " filteredResults.txt: chr=" + resultChrPos[0] + " pos=" + resultChrPos[1]);
+            System.out.println(lineCount + " ALL.merged.Record: chr=" + chr + " pos=" + pos + " <=====>" + " filteredResults.txt: chr=" + resultChrPos[0] + " pos=" + resultChrPos[1]);
 
             if (resultChrPos[0] == chr && resultChrPos[1] == pos) {
                 System.out.println("\n" + knownVariantLine + "\n");
             }
 
-            if ((lineC++ % 100000) == 1) {
-                System.out.println(lineC + " ALL.merged.Record: chr=" + chr + " pos=" + pos + " <=====>" + " filteredResults.txt: chr=" + resultChrPos[0] + " pos=" + resultChrPos[1]);
+            if ((lineCount++ % 100000) == 1) {
+                System.out.println(lineCount + " ALL.merged.Record: chr=" + chr + " pos=" + pos + " <=====>" + " filteredResults.txt: chr=" + resultChrPos[0] + " pos=" + resultChrPos[1]);
             }
         }
 

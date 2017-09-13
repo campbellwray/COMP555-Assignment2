@@ -49,7 +49,7 @@ class ReadVCF {
             String recordLine;
             String[] recordSplit;
 
-            int chromIndex = theVCFScanner.getHeaderIndex("CHROM");
+            int chrIndex = theVCFScanner.getHeaderIndex("CHROM");
             int posIndex = theVCFScanner.getHeaderIndex("POS");
             int fatherIndex = theVCFScanner.getHeaderIndex("FATHER");
             int son2Index = theVCFScanner.getHeaderIndex("SON2");
@@ -59,7 +59,7 @@ class ReadVCF {
                 recordLine = theVCFScanner.scanner.nextLine();
                 recordSplit = recordLine.split("\\s+");
 
-                String chromosome = "chr" + recordSplit[chromIndex];
+                String chromosome = "chr" + recordSplit[chrIndex];
                 int position = Integer.parseInt(recordSplit[posIndex]);
 
                 String[] familyMembers = new String[(son2Index - fatherIndex) + 1];
