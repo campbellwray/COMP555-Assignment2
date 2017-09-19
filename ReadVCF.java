@@ -142,7 +142,7 @@ class ReadVCF {
         }
     }
 
-    private static void checkRetin(String[] familyMembers, String theLine) {
+    private static void checkRetinA(String[] familyMembers, String theLine) {
         if (genotypeHomoRec(familyMembers[0]) &&            //Father
                 genotypeHetero(familyMembers[1]) &&         //Mother
                 genotypeHetero(familyMembers[2]) &&         //D1
@@ -155,10 +155,25 @@ class ReadVCF {
                 String genotype = getGenotype(familyMember);
                 System.out.print(genotype + "\t");
             }
-            System.out.println("(Retin)--->\t" + theLine);
+            System.out.println("(RetinA)--->\t" + theLine);
         }
     }
-
+	private static void checkRetinB(String[] familyMembers, String theLine) {
+        if (genotypeHetero(familyMembers[0]) &&            //Father
+                genotypeHomoDom(familyMembers[1]) &&         //Mother
+                genotypeHomoDom(familyMembers[2]) &&         //D1
+                genotypeHetero(familyMembers[3]) &&        //D2
+                genotypeHomoDom(familyMembers[4]) &&         //D3
+                genotypeHomoDom(familyMembers[5]) &&         //S1
+                genotypeHetero(familyMembers[6])           //S2
+                ) {
+            for (String familyMember : familyMembers) {
+                String genotype = getGenotype(familyMember);
+                System.out.print(genotype + "\t");
+            }
+            System.out.println("(RetinB)--->\t" + theLine);
+        }
+    }
     private static void checkSkele(String[] familyMembers, String theLine) {
         if (genotypeHetero(familyMembers[0]) &&                                             //Father
                 genotypeHetero(familyMembers[1]) &&                                         //Mother
@@ -176,7 +191,7 @@ class ReadVCF {
         }
     }
 
-    private static void checkParap(String[] familyMembers, String theLine) {
+    private static void checkParapA(String[] familyMembers, String theLine) {
         if (genotypeHomoRec(familyMembers[0]) &&            //Father
                 genotypeHetero(familyMembers[1]) &&         //Mother
                 genotypeHomoRec(familyMembers[2]) &&        //D1
@@ -189,7 +204,23 @@ class ReadVCF {
                 String genotype = getGenotype(familyMember);
                 System.out.print(genotype + "\t");
             }
-            System.out.println("(Parap)--->\t" + theLine);
+            System.out.println("(ParapA)--->\t" + theLine);
+        }
+    }
+    private static void checkParapB(String[] familyMembers, String theLine) {
+        if (genotypeHetero(familyMembers[0]) &&            //Father
+                genotypeHomoDom(familyMembers[1]) &&         //Mother
+                genotypeHetero(familyMembers[2]) &&        //D1
+                genotypeHomoDom(familyMembers[3]) &&         //D2
+                genotypeHetero(familyMembers[4]) &&        //D3
+                genotypeHomoDom(familyMembers[5]) &&         //S1
+                genotypeHetero(familyMembers[6])           //S2
+                ) {
+            for (String familyMember : familyMembers) {
+                String genotype = getGenotype(familyMember);
+                System.out.print(genotype + "\t");
+            }
+            System.out.println("(ParapB)--->\t" + theLine);
         }
     }
 }
