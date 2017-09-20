@@ -8,8 +8,8 @@ public class RecordParser {
         //args[1] is filtered
         //boolean process = false;
         //Scanner recordScanner = getVCFScanner("/home/tcs/public_html/COMP555/VCFdata/ALL.merged.phase1_release_v3.20101123.snps_indels_svs.vcf");
-        VCFScanner knownVariantsVCFScanner = new VCFScanner("../filteredResults2.txt", false);
-        VCFScanner queryVariantVCFScanner = new VCFScanner("../filteredResults.txt", false);
+        VCFScanner knownVariantsVCFScanner = new VCFScanner("../VCFdata/ALL.merged.phase1_release_v3.20101123.snps_indels_svs.vcf", false);
+        VCFScanner queryVariantVCFScanner = new VCFScanner("filteredResults.vcf", false);
         //Scanner recordScanner = getVCFScanner("../filteredResults2.txt");
         //Scanner resultScanner = getVCFScanner("../filteredResults.txt");
 
@@ -74,13 +74,13 @@ public class RecordParser {
             while (resultChrPos[0] < chr || (resultChrPos[0] <= chr && resultChrPos[1] < pos)) {
                 if (queryVariantVCFScanner.scanner.hasNextLine()) {
                     resultChrPos = getNextChrPos(queryVariantVCFScanner.scanner, resultChrPos);
-                    System.out.println("ALL.merged.Record: chr=" + chr + " pos=" + pos + " <=====>" + " filteredResults.txt: chr=" + resultChrPos[0] + " pos=" + resultChrPos[1]);
+                    //System.out.println("ALL.merged.Record: chr=" + chr + " pos=" + pos + " <=====>" + " filteredResults.txt: chr=" + resultChrPos[0] + " pos=" + resultChrPos[1]);
                 } else {
                     return;
                 }
             }
 
-            System.out.println(lineCount + " ALL.merged.Record: chr=" + chr + " pos=" + pos + " <=====>" + " filteredResults.txt: chr=" + resultChrPos[0] + " pos=" + resultChrPos[1]);
+            //System.out.println(lineCount + " ALL.merged.Record: chr=" + chr + " pos=" + pos + " <=====>" + " filteredResults.txt: chr=" + resultChrPos[0] + " pos=" + resultChrPos[1]);
 
             if (resultChrPos[0] == chr && resultChrPos[1] == pos) {
                 System.out.println("\n" + knownVariantLine + "\n");

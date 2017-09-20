@@ -85,9 +85,11 @@ class ReadVCF {
                                 //TODO: Early stop?
                                 if (position > theRange.start && position < theRange.end) {
                                     checkSickle(familyMembers, recordLine);
-                                    checkRetin(familyMembers, recordLine);
+                                    checkRetinA(familyMembers, recordLine);
+                                    checkRetinB(familyMembers, recordLine);
                                     checkSkele(familyMembers, recordLine);
-                                    checkParap(familyMembers, recordLine);
+                                    checkParapA(familyMembers, recordLine);
+                                    checkParapB(familyMembers, recordLine);
                                     break;
                                 }
                             }
