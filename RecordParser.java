@@ -33,25 +33,28 @@ public class RecordParser {
             int chr = Integer.parseInt(splits[chrIndex]);
             int pos = Integer.parseInt(splits[posIndex]);
 
-            //Known variants file is not numerically ordered: Reset queryVariant scanner after 19->2, 22->3 transitions
-            if ((chr == 2 && !seen2)) {
-                seen2 = true;
-                System.err.println("\nRESETTING FROM 2\n");
-                queryVariantVCFScanner = new VCFScanner(QUERY_VARIANTS_FILE, false);
-                resultChrPos = getNextChrPos(queryVariantVCFScanner.scanner, resultChrPos);
-            } else if (chr == 3 && !seen3) {
-                seen3 = true;
-                System.err.println("\nRESETTING FROM 3\n");
-                queryVariantVCFScanner = new VCFScanner(QUERY_VARIANTS_FILE, false);
-                resultChrPos = getNextChrPos(queryVariantVCFScanner.scanner, resultChrPos);
-            }
+
 
             while (resultChrPos[0] < chr || (resultChrPos[0] <= chr && resultChrPos[1] < pos)) {
                 if (queryVariantVCFScanner.scanner.hasNextLine()) {
                     resultChrPos = getNextChrPos(queryVariantVCFScanner.scanner, resultChrPos);
                     //System.out.println("ALL.merged.Record: chr=" + chr + " pos=" + pos + " <=====>" + " filteredResults.txt: chr=" + resultChrPos[0] + " pos=" + resultChrPos[1]);
-                } else {
+                }
+                else if (seen2 && seen3) {
                     return;
+                } else {
+                    //Known variants file is not numerically ordered: Reset queryVariant scanner after 19->2, 22->3 transitions
+                    if ((chr == 2 && !seen2)) {
+                        seen2 = true;
+                        System.err.println("\nRESETTING FROM 2\n");
+                        queryVariantVCFScanner = new VCFScanner(QUERY_VARIANTS_FILE, false);
+                        resultChrPos = getNextChrPos(queryVariantVCFScanner.scanner, resultChrPos);
+                    } else if (chr == 3 && !seen3) {
+                        seen3 = true;
+                        System.err.println("\nRESETTING FROM 3\n");
+                        queryVariantVCFScanner = new VCFScanner(QUERY_VARIANTS_FILE, false);
+                        resultChrPos = getNextChrPos(queryVariantVCFScanner.scanner, resultChrPos);
+                    }
                 }
             }
 
