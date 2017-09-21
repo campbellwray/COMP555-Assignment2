@@ -2,6 +2,31 @@ import java.util.Scanner;
 import java.io.*;
 import java.util.ArrayList;
 
+class Range {
+    int start;
+    int end;
+
+    Range (int start, int end){
+        this.start = start;
+        this.end = end;
+    }
+}
+
+class ExonRegion {
+    String chromosome;
+    String direction;
+    ArrayList<Range> ranges = new ArrayList<Range>();
+
+    ExonRegion(String chromosome, String direction){
+        this.chromosome = chromosome;
+        this.direction = direction;
+    }
+
+    void addRange(int start, int end){
+        ranges.add(new Range(start,end));
+    }
+}
+
 public class ExonParser {
 	public static void main(String[] args) {
 		ArrayList<ExonRegion> exons = getExonRegions(args[0]);
@@ -15,7 +40,7 @@ public class ExonParser {
         }
 	}
 
-    public static ArrayList<ExonRegion> getExonRegions(String filename) {
+    static ArrayList<ExonRegion> getExonRegions(String filename) {
         try{
             Scanner sc = new Scanner(new File(filename));
             String previousChrom = "";

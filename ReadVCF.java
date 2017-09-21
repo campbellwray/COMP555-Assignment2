@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 class VCFScanner {
     final Scanner scanner;
+
     final String[] header;
 
     VCFScanner(String pathname, boolean printHeader) throws FileNotFoundException {
@@ -45,7 +46,16 @@ class ReadVCF {
         ArrayList<ExonRegion> exonRegions = ExonParser.getExonRegions(args[1]);
 
         try {
-            VCFScanner theVCFScanner = new VCFScanner(args[0], true);
+            VCFScanner theVCFScanner = new VCFScanner(args[0], false);
+
+            //Print new header
+            String[] currentHeaderTokens = theVCFScanner.header;
+            System.out.print("#DISEASE\t");
+            for (String token : currentHeaderTokens) {
+                System.out.print(token + "\t");
+            }
+            System.out.println();
+
             String recordLine;
             String[] recordSplit;
 
@@ -63,20 +73,8 @@ class ReadVCF {
                 int position = Integer.parseInt(recordSplit[posIndex]);
 
                 String[] familyMembers = new String[(son2Index - fatherIndex) + 1];
-                //System.out.println(son2Index-fatherIndex);
-                //System.out.println(theLine);
-                /*
-                for (int i = fatherIndex; i <= son2Index; i++) {
-                    familyMembers[i - fatherIndex] = recordSplit[i];
-                }*/
-                System.arraycopy(recordSplit, fatherIndex, familyMembers, 0, son2Index + 1 - fatherIndex);
 
-                //System.out.println(chromosome + " , " + position);
-                /*for (String familyMember : familyMembers) {
-                    String genotype = getGenotype(familyMember);
-                    //System.out.print(genotype + "\t");
-                    
-                }*/
+                System.arraycopy(recordSplit, fatherIndex, familyMembers, 0, son2Index + 1 - fatherIndex);
 
                 if (exonRegions != null) {
                     for (ExonRegion theExonRegion : exonRegions) {
@@ -84,12 +82,12 @@ class ReadVCF {
                             for (Range theRange : theExonRegion.ranges) {
                                 //TODO: Early stop?
                                 if (position > theRange.start && position < theRange.end) {
-                                    checkSickle(familyMembers, recordLine);
-                                    checkRetinA(familyMembers, recordLine);
-                                    checkRetinB(familyMembers, recordLine);
-                                    checkSkele(familyMembers, recordLine);
-                                    checkParapA(familyMembers, recordLine);
-                                    checkParapB(familyMembers, recordLine);
+                                    checkSickleCellAnemia(familyMembers, recordLine);
+                                    checkRetinitisPigmentosaA(familyMembers, recordLine);
+                                    checkRetinitisPigmentosaB(familyMembers, recordLine);
+                                    checkSkeletalDysplasia(familyMembers, recordLine);
+                                    checkSpasticParaplegiaA(familyMembers, recordLine);
+                                    checkSpasticParaplegiaB(familyMembers, recordLine);
                                     break;
                                 }
                             }
@@ -99,14 +97,11 @@ class ReadVCF {
                     System.err.println("Error: Exonregions was empty");
                     return;
                 }
-
             }
         } catch (IOException iox) {
             System.err.println("Could not read from input: " + iox.getMessage());
         }
     }
-
-
 
     private static boolean genotypeHetero(String familyMember) {
         String genotype = getGenotype(familyMember);
@@ -127,7 +122,7 @@ class ReadVCF {
         return familyMemberData.split(":")[0];
     }
 
-    private static void checkSickle(String[] familyMembers, String theLine) {
+    private static void checkSickleCellAnemia(String[] familyMembers, String theLine) {
         if (genotypeHetero(familyMembers[0]) &&             //Father
                 genotypeHetero(familyMembers[1]) &&         //Mother
                 genotypeHetero(familyMembers[2]) &&         //D1
@@ -136,47 +131,35 @@ class ReadVCF {
                 genotypeHetero(familyMembers[5]) &&         //S1
                 genotypeHomoDom(familyMembers[6])           //S2
                 ) {
-            for (String familyMember : familyMembers) {
-                String genotype = getGenotype(familyMember);
-                System.out.print(genotype + "\t");
-            }
-            System.out.println("(Sickle)--->\t" + theLine);
+            System.out.println("SickleCellAnemia\t" + theLine);
         }
     }
 
-    private static void checkRetinA(String[] familyMembers, String theLine) {
-        if (genotypeHomoRec(familyMembers[0]) &&            //Father
+    private static void checkRetinitisPigmentosaA(String[] familyMembers, String theLine) {
+        if (genotypeHomoRec(familyMembers[0])    &&         //Father
                 genotypeHetero(familyMembers[1]) &&         //Mother
                 genotypeHetero(familyMembers[2]) &&         //D1
-                genotypeHomoRec(familyMembers[3]) &&        //D2
+                genotypeHomoRec(familyMembers[3])&&         //D2
                 genotypeHetero(familyMembers[4]) &&         //D3
                 genotypeHetero(familyMembers[5]) &&         //S1
                 genotypeHomoRec(familyMembers[6])           //S2
                 ) {
-            for (String familyMember : familyMembers) {
-                String genotype = getGenotype(familyMember);
-                System.out.print(genotype + "\t");
-            }
-            System.out.println("(RetinA)--->\t" + theLine);
+            System.out.println("RetinitisPigmentosaPatternA\t" + theLine);
         }
     }
-	private static void checkRetinB(String[] familyMembers, String theLine) {
-        if (genotypeHetero(familyMembers[0]) &&            //Father
+	private static void checkRetinitisPigmentosaB(String[] familyMembers, String theLine) {
+        if (genotypeHetero(familyMembers[0]) &&              //Father
                 genotypeHomoDom(familyMembers[1]) &&         //Mother
                 genotypeHomoDom(familyMembers[2]) &&         //D1
-                genotypeHetero(familyMembers[3]) &&        //D2
+                genotypeHetero(familyMembers[3]) &&          //D2
                 genotypeHomoDom(familyMembers[4]) &&         //D3
                 genotypeHomoDom(familyMembers[5]) &&         //S1
-                genotypeHetero(familyMembers[6])           //S2
+                genotypeHetero(familyMembers[6])             //S2
                 ) {
-            for (String familyMember : familyMembers) {
-                String genotype = getGenotype(familyMember);
-                System.out.print(genotype + "\t");
-            }
-            System.out.println("(RetinB)--->\t" + theLine);
+            System.out.println("RetinitisPigmentosaPatternB\t" + theLine);
         }
     }
-    private static void checkSkele(String[] familyMembers, String theLine) {
+    private static void checkSkeletalDysplasia(String[] familyMembers, String theLine) {
         if (genotypeHetero(familyMembers[0]) &&                                             //Father
                 genotypeHetero(familyMembers[1]) &&                                         //Mother
                 (genotypeHetero(familyMembers[2]) || genotypeHomoDom(familyMembers[2])) &&  //D1
@@ -185,15 +168,11 @@ class ReadVCF {
                 genotypeHomoRec(familyMembers[5]) &&                                        //S1
                 (genotypeHetero(familyMembers[6]) || genotypeHomoDom(familyMembers[6]))     //S2
                 ) {
-            for (String familyMember : familyMembers) {
-                String genotype = getGenotype(familyMember);
-                System.out.print(genotype + "\t");
-            }
-            System.out.println("(Skele)--->\t" + theLine);
+            System.out.println("SkeletalDysplasia\t" + theLine);
         }
     }
 
-    private static void checkParapA(String[] familyMembers, String theLine) {
+    private static void checkSpasticParaplegiaA(String[] familyMembers, String theLine) {
         if (genotypeHomoRec(familyMembers[0]) &&            //Father
                 genotypeHetero(familyMembers[1]) &&         //Mother
                 genotypeHomoRec(familyMembers[2]) &&        //D1
@@ -202,27 +181,19 @@ class ReadVCF {
                 genotypeHetero(familyMembers[5]) &&         //S1
                 genotypeHomoRec(familyMembers[6])           //S2
                 ) {
-            for (String familyMember : familyMembers) {
-                String genotype = getGenotype(familyMember);
-                System.out.print(genotype + "\t");
-            }
-            System.out.println("(ParapA)--->\t" + theLine);
+            System.out.println("SpasticParaplegiaPatternA\t" + theLine);
         }
     }
-    private static void checkParapB(String[] familyMembers, String theLine) {
-        if (genotypeHetero(familyMembers[0]) &&            //Father
+    private static void checkSpasticParaplegiaB(String[] familyMembers, String theLine) {
+        if (genotypeHetero(familyMembers[0]) &&              //Father
                 genotypeHomoDom(familyMembers[1]) &&         //Mother
-                genotypeHetero(familyMembers[2]) &&        //D1
+                genotypeHetero(familyMembers[2]) &&          //D1
                 genotypeHomoDom(familyMembers[3]) &&         //D2
-                genotypeHetero(familyMembers[4]) &&        //D3
+                genotypeHetero(familyMembers[4]) &&          //D3
                 genotypeHomoDom(familyMembers[5]) &&         //S1
-                genotypeHetero(familyMembers[6])           //S2
+                genotypeHetero(familyMembers[6])             //S2
                 ) {
-            for (String familyMember : familyMembers) {
-                String genotype = getGenotype(familyMember);
-                System.out.print(genotype + "\t");
-            }
-            System.out.println("(ParapB)--->\t" + theLine);
+            System.out.println("SpasticParaplegiaPatternB\t" + theLine);
         }
     }
 }
