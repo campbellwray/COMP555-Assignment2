@@ -1,7 +1,7 @@
 public class KnownVariantFilter {
     public static void main(String[] args) throws Exception {
-    	String KNOWN_VARIANTS_FILE = "/home/tcs/public_html/COMP555/VCFdata/ALL.merged.phase1_release_v3.20101123.snps_indels_svs.vcf";
-    	String QUERY_VARIANTS_FILE = "filteredResults3.vcf";
+    	String KNOWN_VARIANTS_FILE = "../AMSorted.vcf"; //"/home/tcs/public_html/COMP555/VCFdata/ALL.merged.phase1_release_v3.20101123.snps_indels_svs.vcf";
+    	String QUERY_VARIANTS_FILE = "Results/InheritenceFilteredByExons.vcf"; //"filteredResults3.vcf";
     
        	VCFScanner knownVariantsVCFScanner = new VCFScanner(KNOWN_VARIANTS_FILE, false);
         VCFScanner queryVariantVCFScanner = new VCFScanner(QUERY_VARIANTS_FILE, false);
@@ -76,8 +76,7 @@ public class KnownVariantFilter {
                 double proportion = (double) alternateAlleleCount / totalAlleleCount;
 
                 //System.out.println(disease + "\t" +  (queryAlt.equals(knownAlt)? "TRUE" : "FALSE") + "\t" + knownVariantLine);
-                System.out.format("%s\t%.8f\t%s\t%s", disease, proportion, (queryAlt.equals(knownAlt)? "TRUE" : "FALSE"), knownVariantLine);
-
+                System.out.format("%s\t%.8f\t%s\t%s\n", disease, proportion, (queryAlt.equals(knownAlt)? "TRUE" : "FALSE"), knownVariantLine);
             }
 
             if ((lineCount++ % 100000) == 100000-1) {
