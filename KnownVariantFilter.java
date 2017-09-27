@@ -8,7 +8,7 @@ public class KnownVariantFilter {
 
         //Print new header
         String[] currentHeaderTokens = knownVariantsVCFScanner.header;
-        System.out.print("#DISEASE\tPROPORTION\tALTMATCH\tLOCUS\t");
+        System.out.print("#DISEASE\tPROPORTION\tBAYESIAN\tALTMATCH\tLOCUS\t");
         for (String token : currentHeaderTokens) {
             System.out.print(token + "\t");
         }

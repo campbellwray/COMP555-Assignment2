@@ -34,7 +34,7 @@ class VCFScanner {
     }
 }
 
-class InheritenceExonFilter {
+class InheritanceExonFilter {
     public static void main(String[] args) {
         if (args.length != 2) {
             System.err.println("Example usage: java ReadVCF <filename> <exons>");
@@ -126,10 +126,10 @@ class InheritenceExonFilter {
         if (genotypeHetero(familyMembers[0]) &&             //Father
                 genotypeHetero(familyMembers[1]) &&         //Mother
                 genotypeHetero(familyMembers[2]) &&         //D1
-                genotypeHomoDom(familyMembers[3]) &&        //D2
-                genotypeHomoRec(familyMembers[4]) &&        //D3
+                genotypeHomoRec(familyMembers[3]) &&        //D2
+                genotypeHomoDom(familyMembers[4]) &&        //D3
                 genotypeHetero(familyMembers[5]) &&         //S1
-                genotypeHomoDom(familyMembers[6])           //S2
+                genotypeHomoRec(familyMembers[6])           //S2
                 ) {
             System.out.println("SickleCellAnemia\t" + theLine);
         }
