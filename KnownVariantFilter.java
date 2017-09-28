@@ -1,10 +1,11 @@
 public class KnownVariantFilter {
     public static void main(String[] args) throws Exception {
-    	String KNOWN_VARIANTS_FILE = "Auxiliary/SmallerKnownVariants.vcf"; //"/home/tcs/public_html/COMP555/VCFdata/ALL.merged.phase1_release_v3.20101123.snps_indels_svs.vcf";
-    	String QUERY_VARIANTS_FILE = "Results/InheritenceFilteredByExonsWithLoci.vcf"; //"filteredResults3.vcf";
-    
-       	VCFScanner knownVariantsVCFScanner = new VCFScanner(KNOWN_VARIANTS_FILE, false);
-        VCFScanner queryVariantVCFScanner = new VCFScanner(QUERY_VARIANTS_FILE, false);
+        if (args.length != 2) {
+            System.err.println("Usage: java KnownVariantFilter <Known Variants File> <Query VCF file>");
+        }
+
+       	VCFScanner knownVariantsVCFScanner = new VCFScanner(args[0], false);
+        VCFScanner queryVariantVCFScanner = new VCFScanner(args[1], false);
 
         //Print new header
         String[] currentHeaderTokens = knownVariantsVCFScanner.header;
