@@ -54,7 +54,7 @@ class LocusFinder {
                 	refLocus = refRecordSplit[refLocusIndex];
                 
                 	if (refChromosome.equals(chromosome) && position > refPosStartPosition && position < refPosEndPosition){
-                		lastLocus = refLocus;
+                		lastLocus = refChromosome.substring(3)+refLocus;
                 		//found = true;
                 	}
                 
