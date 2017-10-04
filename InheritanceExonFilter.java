@@ -1,12 +1,13 @@
 import java.util.Scanner;
 import java.io.File;
-import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
+/**
+ * Scanner for VCF files, automatically skips the metadata, and provides convenient access to the header information
+ */
 class VCFScanner {
     final Scanner scanner;
-
     final String[] header;
 
     VCFScanner(String pathname, boolean printHeader) throws FileNotFoundException {
@@ -34,21 +35,22 @@ class VCFScanner {
     }
 }
 
+/**
+ * Filters the families variants according to the exon regions,
+ * then filters by the inheritance patterns for each disease
+ */
 class InheritanceExonFilter {
     public static void main(String[] args) {
+        //VCFData/wgEncodeGencodeBasicV17.txt"
         if (args.length != 2) {
-            System.err.println("Example usage: java ReadVCF <filename> <exons>");
+            System.err.println("Example usage: java InheritanceExonFilter <variants VCF file> <exon regions file>");
             return;
         }
-
-        //VCFData/wgEncodeGencodeBasicV17.txt"
-
-        ArrayList<ExonRegion> exonRegions = ExonParser.getExonRegions(args[1]);
-
         try {
+            ArrayList<ExonRegion> exonRegions = ExonParser.getExonRegions(args[1]);
             VCFScanner theVCFScanner = new VCFScanner(args[0], false);
 
-            //Print new header
+            //Append disease to header
             String[] currentHeaderTokens = theVCFScanner.header;
             System.out.print("#DISEASE\t");
             for (String token : currentHeaderTokens) {
@@ -64,7 +66,7 @@ class InheritanceExonFilter {
             int fatherIndex = theVCFScanner.getHeaderIndex("FATHER");
             int son2Index = theVCFScanner.getHeaderIndex("SON2");
 
-            //The Records
+            //Filter each record by exon region
             while (theVCFScanner.scanner.hasNext()) {
                 recordLine = theVCFScanner.scanner.nextLine();
                 recordSplit = recordLine.split("\\s+");
@@ -80,7 +82,7 @@ class InheritanceExonFilter {
                     for (ExonRegion theExonRegion : exonRegions) {
                         if (theExonRegion.chromosome.equals(chromosome)) {
                             for (Range theRange : theExonRegion.ranges) {
-                                //TODO: Early stop?
+                                //Further filter by each possible inheritance pattern for each disease
                                 if (position > theRange.start && position < theRange.end) {
                                     checkSickleCellAnemia(familyMembers, recordLine);
                                     checkRetinitisPigmentosaA(familyMembers, recordLine);
@@ -98,8 +100,8 @@ class InheritanceExonFilter {
                     return;
                 }
             }
-        } catch (IOException iox) {
-            System.err.println("Could not read from input: " + iox.getMessage());
+        } catch (FileNotFoundException fnfx) {
+            System.err.println("Could not read from input: " + fnfx.getMessage());
         }
     }
 
@@ -131,7 +133,7 @@ class InheritanceExonFilter {
                 genotypeHetero(familyMembers[5]) &&         //S1
                 genotypeHomoRec(familyMembers[6])           //S2
                 ) {
-            System.out.println("SickleCellAnemia\t" + theLine);
+            System.out.println("SickleCellAnemiaAR\t" + theLine);
         }
     }
 
@@ -144,7 +146,7 @@ class InheritanceExonFilter {
                 genotypeHetero(familyMembers[5]) &&         //S1
                 genotypeHomoRec(familyMembers[6])           //S2
                 ) {
-            System.out.println("RetinitisPigmentosaPatternA\t" + theLine);
+            System.out.println("RetinitisPigmentosaPatternAR\t" + theLine);
         }
     }
 	private static void checkRetinitisPigmentosaB(String[] familyMembers, String theLine) {
@@ -156,7 +158,7 @@ class InheritanceExonFilter {
                 genotypeHomoDom(familyMembers[5]) &&         //S1
                 genotypeHetero(familyMembers[6])             //S2
                 ) {
-            System.out.println("RetinitisPigmentosaPatternB\t" + theLine);
+            System.out.println("RetinitisPigmentosaPatternAD\t" + theLine);
         }
     }
     private static void checkSkeletalDysplasia(String[] familyMembers, String theLine) {
@@ -181,7 +183,7 @@ class InheritanceExonFilter {
                 genotypeHetero(familyMembers[5]) &&         //S1
                 genotypeHomoRec(familyMembers[6])           //S2
                 ) {
-            System.out.println("SpasticParaplegiaPatternA\t" + theLine);
+            System.out.println("SpasticParaplegiaPatternAR\t" + theLine);
         }
     }
     private static void checkSpasticParaplegiaB(String[] familyMembers, String theLine) {
@@ -193,7 +195,7 @@ class InheritanceExonFilter {
                 genotypeHomoDom(familyMembers[5]) &&         //S1
                 genotypeHetero(familyMembers[6])             //S2
                 ) {
-            System.out.println("SpasticParaplegiaPatternB\t" + theLine);
+            System.out.println("SpasticParaplegiaPatternAD\t" + theLine);
         }
     }
 }
