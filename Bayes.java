@@ -39,19 +39,19 @@ public class Bayes {
                 double prior = 0.0;
                 String disease = recordSplit[diseaseIndex];
                 switch(disease) {
-                    case "SickleCellAnemia":
+                    case "SickleCellAnemiaAR":
                         prior = SICKLE_CELL_ANEMIA_PRIOR;
                         break;
-                    case "SpasticParaplegiaAR":
+                    case "SpasticParaplegiaPatternAR":
                         prior = SPASTIC_PARAPLEGIA_PRIOR;
                         break;
-                    case "SpasticParaplegiaAD":
+                    case "SpasticParaplegiaPatternAD":
                         prior = SPASTIC_PARAPLEGIA_PRIOR;
                         break;
-                    case "RetinitisPigmentosaAR":
+                    case "RetinitisPigmentosaPatternAR":
                         prior = RETENITIS_PIGMENTOSA_PRIOR;
                         break;
-                    case "RetinitisPigmentosaAD":
+                    case "RetinitisPigmentosaPatternAD":
                         prior = RETENITIS_PIGMENTOSA_PRIOR;
                         break;
                     case "SkeletalDysplasia":
@@ -63,7 +63,10 @@ public class Bayes {
                 }
 
                 double proportion = Double.parseDouble(recordSplit[proportionIndex]);
-                double prob = 1 - (proportion - prior) / (proportion + prior);
+                double prob = 1 - Math.abs(proportion - prior) / (proportion + prior);
+                if(proportion == 0.0) {
+                    prob = 0.0;
+                }
 
                 System.out.println(prob + "\t" + recordLine);
             }
