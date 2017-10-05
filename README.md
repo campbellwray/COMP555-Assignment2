@@ -44,8 +44,13 @@ Separate into VCF files for each disease (for probability file):
 (head -n 1 && tail -n +1 | grep "SickleCellAnemia") < Results/candidateProbabilities.vcf > Results/SickleCellAnemiaProbabilities.vcf
 (head -n 1 && tail -n +1 | grep "RetinitisPigmentosa") < Results/candidateProbabilities.vcf > Results/RetinitisPigmentosaProbabilities.vcf
 (head -n 1 && tail -n +1 | grep "SkeletalDysplasia") < Results/candidateProbabilities.vcf > Results/SkeletalDysplasiaProbabilities.vcf
-
+(head -n 1 && tail -n +1 | grep "SpasticParaplegia") < Results/candidateProbabilities.vcf > Results/SpasticParaplegiaProbabilities.vcf
 ```
 
-
 Separate into VCF files for each disease (for loci file):
+```
+(head -n 1 && tail -n +1 | grep "SickleCellAnemia") < Results/candidatesFilteredByKnownLoci.vcf > Results/SickleCellAnemiaMatchingLoci.vcf
+(head -n 1 && tail -n +1 | grep "RetinitisPigmentosa") < Results/candidatesFilteredByKnownLoci.vcf > Results/RetinitisPigmentosaMatchingLoci.vcf
+(head -n 1 && tail -n +1 | grep "SkeletalDysplasia") < Results/candidatesFilteredByKnownLoci-skeletal.vcf > Results/SkeletalDysplasiaMatchingLoci.vcf
+(head -n 1 && tail -n +1 | grep "SpasticParaplegia") < Results/candidatesFilteredByKnownLoci.vcf > Results/SpasticParaplegiaMatchingLoci.vcf
+```
