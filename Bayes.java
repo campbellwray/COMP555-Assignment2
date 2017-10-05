@@ -63,7 +63,7 @@ public class Bayes {
                 }
 
                 double proportion = Double.parseDouble(recordSplit[proportionIndex]);
-                double prob = (proportion - prior) / (proportion + prior);
+                double prob = 1 - (proportion - prior) / (proportion + prior);
 
                 System.out.println(prob + "\t" + recordLine);
             }
