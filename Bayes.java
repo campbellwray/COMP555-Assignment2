@@ -63,7 +63,10 @@ public class Bayes {
                 }
 
                 double proportion = Double.parseDouble(recordSplit[proportionIndex]);
-                double prob = 1 - Math.abs(proportion - prior) / (proportion + prior);
+                double model = 1 - proportion;
+                double numerator = model * prior;
+                double denominator = numerator + (proportion * (1-prior));
+                double prob = numerator / denominator;
                 if(proportion == 0.0) {
                     prob = 0.0;
                 }
