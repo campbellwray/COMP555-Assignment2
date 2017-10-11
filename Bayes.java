@@ -36,6 +36,7 @@ public class Bayes {
                 recordLine = variantScanner.scanner.nextLine();
                 recordSplit = recordLine.split("\\s+");
 
+                //Determine disease and set prior
                 double prior = 0.0;
                 String disease = recordSplit[diseaseIndex];
                 switch(disease) {
@@ -62,6 +63,7 @@ public class Bayes {
                         break;
                 }
 
+                //Perform bayes rule calculation
                 double proportion = Double.parseDouble(recordSplit[proportionIndex]);
                 double model = 1 - proportion;
                 double numerator = model * prior;
